@@ -3,31 +3,30 @@ import { Song, Track, Instrument } from "reactronica";
 import PianoRollDisplay from "../PianoRollDisplay/PianoRollDisplay.js";
 import "./PianoRoll.css";
 
-const PianoRoll = ({ kit }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
+const PianoRoll = ({ kit, bpm }) => {
+	const [isPlaying, setIsPlaying] = useState(false);
 
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+	const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
-  const [steps, setSteps] = useState(kit.sequence);
-  return (
-    <>
-      {kit && (
-        <section className="piano-roll fade-in">
-          <button
-            className="play-button"
-            onClick={() => setIsPlaying(!isPlaying)}
-          >
-            {isPlaying ? " STOP " : " PLAY "}
-          </button>
+	const [steps, setSteps] = useState(kit.sequence);
+	return (
+		<>
+			{kit && (
+				<section className="piano-roll fade-in">
+					<button
+						className="play-button"
+						onClick={() => setIsPlaying(!isPlaying)}>
+						{isPlaying ? " STOP " : " PLAY "}
+					</button>
 
-          <PianoRollDisplay
-            currentStepIndex={currentStepIndex}
-            steps={steps}
-            setSteps={setSteps}
-            isPlaying={isPlaying}
-          />
+					<PianoRollDisplay
+						currentStepIndex={currentStepIndex}
+						steps={steps}
+						setSteps={setSteps}
+						isPlaying={isPlaying}
+					/>
 
-          <Song isPlaying={isPlaying} bpm={kit.bpm}>
+          <Song isPlaying={isPlaying} bpm={bpm}>
             <Track
               steps={steps}
               subdivision={"16n"}
