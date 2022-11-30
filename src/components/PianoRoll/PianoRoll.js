@@ -31,7 +31,7 @@ const PianoRoll = ({ kit }) => {
             <Track
               steps={steps}
               subdivision={"16n"}
-              onStepPlay={(index) => {
+              onStepPlay={(stepNotes, index) => {
                 setCurrentStepIndex(index);
               }}
             >
