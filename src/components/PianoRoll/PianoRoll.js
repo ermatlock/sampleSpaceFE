@@ -26,32 +26,33 @@ const PianoRoll = ({ kit, bpm }) => {
 						isPlaying={isPlaying}
 					/>
 
-					<Song isPlaying={isPlaying} bpm={bpm}>
-						<Track
-							steps={steps}
-							subdivision={"16n"}
-							onStepPlay={(index) => {
-								setCurrentStepIndex(index);
-							}}>
-							<Instrument
-								type="sampler"
-								samples={{
-									C3: kit.elements.kick.sound_url,
-									"C#3": kit.elements.snare.sound_url,
-									D3: kit.elements.hh_closed.sound_url,
-									"D#3": kit.elements.hh_open.sound_url,
-									E3: kit.elements.melody.sound_url,
-									F3: kit.elements.one_shot_1.sound_url,
-									"F#3": kit.elements.one_shot_2.sound_url,
-									G3: kit.elements.texture.sound_url,
-								}}
-							/>
-						</Track>
-					</Song>
-				</section>
-			)}
-		</>
-	);
+          <Song isPlaying={isPlaying} bpm={bpm}>
+            <Track
+              steps={steps}
+              subdivision={"16n"}
+              onStepPlay={(stepNotes, index) => {
+                setCurrentStepIndex(index);
+              }}
+            >
+              <Instrument
+                type="sampler"
+                samples={{
+                  C3: kit.elements.kick.sound_url,
+                  "C#3": kit.elements.snare.sound_url,
+                  D3: kit.elements.hh_closed.sound_url,
+                  "D#3": kit.elements.hh_open.sound_url,
+                  E3: kit.elements.melody.sound_url,
+                  F3: kit.elements.one_shot_1.sound_url,
+                  "F#3": kit.elements.one_shot_2.sound_url,
+                  G3: kit.elements.texture.sound_url,
+                }}
+              />
+            </Track>
+          </Song>
+        </section>
+      )}
+    </>
+  );
 };
 
 export default PianoRoll;
