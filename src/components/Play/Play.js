@@ -1,13 +1,15 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import "./Play.css";
-import logo from "../../assets/images/sample-space-logo.svg";
-import PianoRoll from "../PianoRoll/PianoRoll.js";
-import DrumPad from "../DrumPad/DrumPad";
-import InfoBox from "../InfoBox/InfoBox";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Loader } from "../Loader/Loader";
-import { Error } from "../Error/Error";
+import logo from "../../assets/images/sample-space-logo.svg";
+import audioEngine from "../../lib/AudioEngine";
+import keyboardService from "../../lib/KeyboardService";
 import { Kits } from "../../lib/KitData";
+import DrumPad from "../DrumPad/DrumPad";
+import { Error } from "../Error/Error";
+import InfoBox from "../InfoBox/InfoBox";
+import { Loader } from "../Loader/Loader";
+import PianoRoll from "../PianoRoll/PianoRoll.js";
+import "./Play.css";
 
 const Play = () => {
 	const [kit, setKit] = useState(null);
@@ -27,92 +29,77 @@ const Play = () => {
 	const grooveRef = useRef(null);
 	const dropdownRef = useRef(null);
 
-	const handleKeyboard = useCallback(
-		(e) => {
-			switch (e.code) {
-				case "KeyA":
-					kickRef.current.click();
-					break;
-				case "KeyS":
-					snareRef.current.click();
-					break;
-				case "KeyD":
-					hhClosedRef.current.click();
-					break;
-				case "KeyF":
-					hhOpenRef.current.click();
-					break;
-				case "KeyQ":
-					melodyRef.current.click();
-					break;
-				case "KeyW":
-					oneShotOneRef.current.click();
-					break;
-				case "KeyE":
-					oneShotTwoRef.current.click();
-					break;
-				case "KeyR":
-					grooveRef.current.click();
+	useEffect(() => {
+		// Set up keyboard callbacks for each pad
+		keyboardService.addCallback("C3", () => kickRef.current?.click());
+		keyboardService.addCallback("C#3", () => snareRef.current?.click());
+		keyboardService.addCallback("D3", () => hhClosedRef.current?.click());
+		keyboardService.addCallback("D#3", () => hhOpenRef.current?.click());
+		keyboardService.addCallback("E3", () => melodyRef.current?.click());
+		keyboardService.addCallback("F3", () => oneShotOneRef.current?.click());
+		keyboardService.addCallback("F#3", () => oneShotTwoRef.current?.click());
+		keyboardService.addCallback("G3", () => grooveRef.current?.click());
+
+		return () => {
+			// Clean up keyboard callbacks
+			keyboardService.removeCallback("C3");
+			keyboardService.removeCallback("C#3");
+			keyboardService.removeCallback("D3");
+			keyboardService.removeCallback("D#3");
+			keyboardService.removeCallback("E3");
+			keyboardService.removeCallback("F3");
+			keyboardService.removeCallback("F#3");
+			keyboardService.removeCallback("G3");
+		};
+	}, []);
+
+	useEffect(() => {
+		const loadKit = async () => {
+			try {
+				setLoading(true);
+				const selectedKitData = Kits[selectedKit];
+				if (selectedKitData) {
+					setKit(selectedKitData);
+					setBpm(selectedKitData.bpm);
+					await audioEngine.loadKit(selectedKitData);
+				} else {
+					setErrorMessage("Kit not found");
+				}
+			} catch (error) {
+				setErrorMessage("Error loading kit");
+			} finally {
+				setLoading(false);
 			}
-		},
-		[
-			kickRef,
-			snareRef,
-			hhClosedRef,
-			hhOpenRef,
-			melodyRef,
-			oneShotOneRef,
-			oneShotTwoRef,
-			grooveRef,
-		]
-	);
+		};
+
+		loadKit();
+	}, [selectedKit]);
 
 	const clearSamples = () => {
 		setKit(null);
 	};
 
-	useEffect(() => {
-		setLoading(true);
-
-		clearSamples();
-		setKit(Kits[selectedKit]);
-		setBpm(Kits[selectedKit].bpm);
-		setTimeout(() => {
-			setLoading(false);
-		}, 1000);
-		dropdownRef.current.blur();
-	}, [selectedKit]);
-
-	useEffect(() => {
-		document.addEventListener("keydown", handleKeyboard);
-		return () => {
-			document.removeEventListener("keydown", handleKeyboard);
-		};
-	}, [handleKeyboard]);
+	const handleContainerClick = async () => {
+		await audioEngine.resumeAudioContext();
+	};
 
 	return (
-		<div className="main-view">
-			<header className="play-header fade-in">
-				<Link to="/">
-					<img src={logo} alt="Sample Space logo" />
+		<div className="play-container" onClick={handleContainerClick}>
+			<header className="play-header">
+				<Link to="/" onClick={clearSamples}>
+					<img src={logo} alt="Sample Space Logo" className="logo" />
 				</Link>
-				<div className="selection-items">
-					<div className="selector-container">
-						<label htmlFor="kit-select" className="kit-label">
-							Choose a Kit to Play!
-						</label>
-						<select
-							ref={dropdownRef}
-							className="kit-select"
-							name="kit-select"
-							onChange={(e) => setSelectedKit(e.target.value)}>
-							<option value="Magnetosphere">Magnetosphere</option>
-							<option value="Apollo%2011">Apollo 11</option>
-							<option value="Andromeda%20Strain">Andromeda Strain</option>
-						</select>
-					</div>
-				</div>
+				<select
+					ref={dropdownRef}
+					value={selectedKit}
+					onChange={(e) => setSelectedKit(e.target.value)}
+					className="kit-selector">
+					<option value="Magnetosphere">Magnetosphere</option>
+					<option value="Andromeda%20Strain">Andromeda Strain</option>
+					<option value="Apollo%2011">Apollo 11</option>
+				</select>
 			</header>
+
 			{loading && !errorMessage ? (
 				<Loader />
 			) : errorMessage ? (
