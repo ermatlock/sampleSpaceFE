@@ -31,13 +31,13 @@ const PianoRow = ({
   const createButtons = () => {
     return steps.map((step, index) => {
       return steps[index] && steps[index].includes(note) ?
-      <div key={index+note+(Math.random() * Math.random() * 10)}>
+      <div key={`${index}-${note}-active`}>
         <button onClick={() => toggleNote(note, index)}
           className={`active piano-button ${currentStepIndex === index && isPlaying ? 'playing' : '' }`}>
         </button>
       </div>
       :
-      <div key={index+note}>
+      <div key={`${index}-${note}`}>
         <button
           onClick={() => toggleNote(note, index)}
           className={`piano-button ${currentStepIndex === index && isPlaying  ? 'playing' : '' }`}>

@@ -1,21 +1,56 @@
-import { useState } from "react";
-import { Song, Track, Instrument } from "reactronica";
+import { useEffect, useState } from "react";
+import audioEngine from "../../lib/AudioEngine";
 import PianoRollDisplay from "../PianoRollDisplay/PianoRollDisplay.js";
 import "./PianoRoll.css";
 
 const PianoRoll = ({ kit, bpm }) => {
 	const [isPlaying, setIsPlaying] = useState(false);
-
 	const [currentStepIndex, setCurrentStepIndex] = useState(0);
-
 	const [steps, setSteps] = useState(kit.sequence);
+
+	useEffect(() => {
+		// Update steps when kit changes
+		setSteps(kit.sequence);
+	}, [kit]);
+
+	useEffect(() => {
+		// Load kit into audio engine
+		audioEngine.loadKit(kit);
+	}, [kit]);
+
+	useEffect(() => {
+		// Update BPM in audio engine
+		audioEngine.updateBpm(bpm);
+	}, [bpm]);
+
+	useEffect(() => {
+		// Update steps in audio engine
+		audioEngine.updateSteps(steps);
+	}, [steps]);
+
+	useEffect(() => {
+		// Subscribe to current step index changes
+		const interval = setInterval(() => {
+			if (isPlaying) {
+				setCurrentStepIndex(audioEngine.getCurrentStepIndex());
+			}
+		}, 50);
+
+		return () => clearInterval(interval);
+	}, [isPlaying]);
+
+	const handlePlayToggle = () => {
+		const newIsPlaying = audioEngine.togglePlay();
+		setIsPlaying(newIsPlaying);
+	};
+
 	return (
 		<>
 			{kit && (
 				<section className="piano-roll fade-in">
 					<button
 						className="play-button"
-						onClick={() => setIsPlaying(!isPlaying)}>
+						onClick={handlePlayToggle}>
 						{isPlaying ? " STOP " : " PLAY "}
 					</button>
 
@@ -25,29 +60,6 @@ const PianoRoll = ({ kit, bpm }) => {
 						setSteps={setSteps}
 						isPlaying={isPlaying}
 					/>
-
-					<Song isPlaying={isPlaying} bpm={bpm}>
-						<Track
-							steps={steps}
-							subdivision={"16n"}
-							onStepPlay={(index) => {
-								setCurrentStepIndex(index);
-							}}>
-							<Instrument
-								type="sampler"
-								samples={{
-									C3: kit.elements.kick.sound_url,
-									"C#3": kit.elements.snare.sound_url,
-									D3: kit.elements.hh_closed.sound_url,
-									"D#3": kit.elements.hh_open.sound_url,
-									E3: kit.elements.melody.sound_url,
-									F3: kit.elements.one_shot_1.sound_url,
-									"F#3": kit.elements.one_shot_2.sound_url,
-									G3: kit.elements.texture.sound_url,
-								}}
-							/>
-						</Track>
-					</Song>
 				</section>
 			)}
 		</>

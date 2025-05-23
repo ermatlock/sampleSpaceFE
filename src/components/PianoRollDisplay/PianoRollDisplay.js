@@ -1,6 +1,6 @@
 import React from "react";
-import "./PianoRollDisplay.css";
 import PianoRow from "../PianoRow/PianoRow.js";
+import "./PianoRollDisplay.css";
 
 const PianoRollDisplay = ({ currentStepIndex, steps, setSteps, isPlaying }) => {
   return (
