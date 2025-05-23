@@ -1,5 +1,5 @@
 .drum-pad {
-    display: flex;
+  display: flex;
   position: relative;
   min-width: 150px;
   min-height: 150px;
@@ -7,8 +7,8 @@
   height: 15vw;
   max-width: 175px;
   max-height: 175px;
-  border-radius: var(--border-rad);
-  background-color: #606060;
+  border-radius: 1.2rem;
+  background: radial-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(210, 210, 210, 0.5));
   cursor: pointer;
   border: none;
   align-items: center;
@@ -29,7 +29,7 @@
 .pad-image {
   position: relative;
   object-fit: cover;
-  border-radius: var(--border-rad);
+  border-radius: 1rem;
   overflow: hidden;
   transition: 0.3s;
 }

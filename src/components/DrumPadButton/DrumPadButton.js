@@ -1,18 +1,21 @@
 import { forwardRef } from 'react'
+import "../DrumPad/DrumPad.css"
 
 const DrumPadButton = forwardRef(
-  ({ setNotes, note, id, imgSrc, keystroke, setCurrentSample, kit }, ref) => {
-    const onClick = async () => {
-      setCurrentSample(kit.elements[id])
-      
-      await setNotes([{ name: note, duration: 4 }])
-      await setNotes(null)
+  ({ note, id, imgSrc, keystroke, setCurrentSample, kit, onClick }, ref) => {
+    const handleClick = () => {
+      onClick()
     }
 
     return (
-      <button ref={ref} className='drum-pad' id={id} onClick={onClick}>
-        <img className='pad-image' src={imgSrc} />
-        <p className='keystroke'>{keystroke}</p>
+      <button
+        ref={ref}
+        className='drum-pad'
+        onClick={handleClick}
+        data-note={note}
+        data-id={id}>
+        <img src={imgSrc} alt={id} className='pad-image' />
+        <span className='keystroke'>{keystroke}</span>
       </button>
     )
   }
