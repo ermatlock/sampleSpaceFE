@@ -10,6 +10,7 @@ class AudioEngine {
     this.steps = [];
     this.samples = {};
     this.isInitialized = false;
+    this.swing = 0; // Swing amount (0-1)
   }
 
   async initialize(samples) {
@@ -66,6 +67,10 @@ class AudioEngine {
       this.sequencer.dispose();
     }
 
+    // Set swing on the Transport
+    Transport.swing = this.swing;
+    Transport.swingSubdivision = "16n";
+
     this.sequencer = new Sequence(
       (time, step) => {
         this.currentStepIndex = step;
@@ -78,6 +83,10 @@ class AudioEngine {
       [...Array(16).keys()],
       "16n"
     );
+
+    // Apply swing to the sequencer
+    this.sequencer.swing = this.swing;
+    this.sequencer.swingSubdivision = "16n";
 
     this.sequencer.start(0);
     Transport.start();
@@ -113,6 +122,15 @@ class AudioEngine {
 
   getCurrentStepIndex() {
     return this.currentStepIndex;
+  }
+
+  updateSwing(newSwing) {
+    this.swing = newSwing;
+    // Update swing on both Transport and Sequence
+    Transport.swing = newSwing;
+    if (this.sequencer) {
+      this.sequencer.swing = newSwing;
+    }
   }
 }
 

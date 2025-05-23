@@ -55,6 +55,22 @@
 	margin: 1rem 0 0 0;
 }
 
+.swing-selector {
+	margin: 1rem 0 0 0;
+}
+
+.bpm-selector label,
+.swing-selector label {
+	display: block;
+	margin-bottom: 0.5rem;
+	color: white;
+}
+
+.bpm-selector input,
+.swing-selector input {
+	width: 200px;
+}
+
 @media screen and (max-width: 1200px) {
 	.drum-infobox-container {
 		display: flex;

@@ -18,6 +18,7 @@ const Play = () => {
 	const [errorMessage, setErrorMessage] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [bpm, setBpm] = useState(null);
+	const [swing, setSwing] = useState(0);
 
 	const kickRef = useRef(null);
 	const snareRef = useRef(null);
@@ -135,6 +136,21 @@ const Play = () => {
 								value={bpm}
 								onChange={(e) => setBpm(e.target.value)}
 								onDoubleClick={() => setBpm(kit.bpm)}
+							/>
+						</div>
+						<div className="swing-selector">
+							<label htmlFor="swing">Swing: {Math.round(swing * 100)}%</label>
+							<input
+								type="range"
+								min="0"
+								max="1"
+								step="0.01"
+								name="swing"
+								value={swing}
+								onChange={(e) => {
+									setSwing(parseFloat(e.target.value));
+									audioEngine.updateSwing(parseFloat(e.target.value));
+								}}
 							/>
 						</div>
 						<PianoRoll kit={kit} bpm={bpm} />
