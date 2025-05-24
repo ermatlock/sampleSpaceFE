@@ -1,4 +1,4 @@
-import { Sampler, Sequence, start, Transport } from 'tone';
+import { AutoFilter, Delay, Reverb, Sampler, Sequence, start, Transport } from 'tone';
 
 class AudioEngine {
   constructor() {
@@ -11,6 +11,28 @@ class AudioEngine {
     this.samples = {};
     this.isInitialized = false;
     this.swing = 0; // Swing amount (0-1)
+
+    // Initialize effects with proper settings
+    this.reverb = new Reverb({
+      decay: 2.5,
+      wet: 0
+    }).toDestination();
+
+    this.delay = new Delay({
+      delayTime: 0.25,
+      wet: 0
+    }).toDestination();
+
+    this.autoFilter = new AutoFilter({
+      frequency: 1000,
+      type: "lowpass",
+      depth: 0.5,
+      baseFrequency: 200,
+      octaves: 2.6,
+      filter: {
+        type: "lowpass"
+      }
+    }).toDestination();
   }
 
   async initialize(samples) {
@@ -20,8 +42,16 @@ class AudioEngine {
       this.isInitialized = true;
     }
 
-    // Create sampler with all samples
-    this.sampler = new Sampler(samples).toDestination();
+    // Create sampler and connect it through the effects chain
+    this.sampler = new Sampler(samples);
+
+    // Connect the effects chain
+    this.sampler
+      .connect(this.autoFilter)
+      .connect(this.delay)
+      .connect(this.reverb)
+      .toDestination();
+
     this.samples = samples;
   }
 
@@ -130,6 +160,24 @@ class AudioEngine {
     Transport.swing = newSwing;
     if (this.sequencer) {
       this.sequencer.swing = newSwing;
+    }
+  }
+
+  updateReverbWet(value) {
+    if (this.reverb) {
+      this.reverb.wet.value = value;
+    }
+  }
+
+  updateDelayWet(value) {
+    if (this.delay) {
+      this.delay.wet.value = value;
+    }
+  }
+
+  updateFilterFrequency(value) {
+    if (this.autoFilter) {
+      this.autoFilter.frequency.value = value;
     }
   }
 }
