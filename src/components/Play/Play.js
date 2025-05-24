@@ -19,6 +19,9 @@ const Play = () => {
 	const [loading, setLoading] = useState(true);
 	const [bpm, setBpm] = useState(null);
 	const [swing, setSwing] = useState(0);
+	const [reverbWet, setReverbWet] = useState(0);
+	const [delayWet, setDelayWet] = useState(0);
+	const [filterFreq, setFilterFreq] = useState(1000);
 
 	const kickRef = useRef(null);
 	const snareRef = useRef(null);
@@ -152,6 +155,53 @@ const Play = () => {
 									audioEngine.updateSwing(parseFloat(e.target.value));
 								}}
 							/>
+						</div>
+						<div className="effects-container">
+							<div className="effect-control">
+								<label htmlFor="reverb">Reverb: {Math.round(reverbWet * 100)}%</label>
+								<input
+									type="range"
+									min="0"
+									max="1"
+									step="0.01"
+									name="reverb"
+									value={reverbWet}
+									onChange={(e) => {
+										setReverbWet(parseFloat(e.target.value));
+										audioEngine.updateReverbWet(parseFloat(e.target.value));
+									}}
+								/>
+							</div>
+							<div className="effect-control">
+								<label htmlFor="delay">Delay: {Math.round(delayWet * 100)}%</label>
+								<input
+									type="range"
+									min="0"
+									max="1"
+									step="0.01"
+									name="delay"
+									value={delayWet}
+									onChange={(e) => {
+										setDelayWet(parseFloat(e.target.value));
+										audioEngine.updateDelayWet(parseFloat(e.target.value));
+									}}
+								/>
+							</div>
+							<div className="effect-control">
+								<label htmlFor="filter">Filter: {Math.round(filterFreq)}Hz</label>
+								<input
+									type="range"
+									min="20"
+									max="20000"
+									step="1"
+									name="filter"
+									value={filterFreq}
+									onChange={(e) => {
+										setFilterFreq(parseFloat(e.target.value));
+										audioEngine.updateFilterFrequency(parseFloat(e.target.value));
+									}}
+								/>
+							</div>
 						</div>
 						<PianoRoll kit={kit} bpm={bpm} />
 					</main>
